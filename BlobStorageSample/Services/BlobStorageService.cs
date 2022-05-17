@@ -9,9 +9,8 @@ public interface IBlobStorageService
 {
     Task<string> GetBlob(string fileName);
     Task<string> UploadFileToStorageAsync(string fileName, Stream fileContent);
-    Task DeleteFileIfExistsAsync(string fileName);
+    Task<bool> DeleteFileIfExistsAsync(string fileName); 
     Task<bool> ExistAsync(string fileName);
-
 }
 
 public class BlobStorageService : IBlobStorageService
@@ -41,11 +40,10 @@ public class BlobStorageService : IBlobStorageService
 
         return (await GetUserDelegationSasBlob(blockBlob)).ToString();
     }
-    public async Task DeleteFileIfExistsAsync(string fileName)
-    {
-        var blockBlob = _account.GetBlobClient(fileName);
 
-        await blockBlob.DeleteIfExistsAsync();
+    public async Task<bool> DeleteFileIfExistsAsync(string fileName)
+    {
+        return await _account.DeleteBlobIfExistsAsync(fileName);
     }
 
     public async Task<bool> ExistAsync(string fileName)
